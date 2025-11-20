@@ -95,8 +95,42 @@ export async function DELETE(
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    await prisma.location.delete({
-      where: { id: params.id }
+    // Use a transaction to delete all related records first
+    await prisma.$transaction(async (tx) => {
+      // Delete related inventories
+      await tx.inventory.deleteMany({
+        where: { locationId: params.id }
+      })
+
+      // Delete related attendances
+      await tx.attendance.deleteMany({
+        where: { locationId: params.id }
+      })
+
+      // Get all activities for this location to delete their checklist items
+      const activities = await tx.activity.findMany({
+        where: { locationId: params.id },
+        select: { id: true }
+      })
+
+      // Delete checklist items for each activity
+      if (activities.length > 0) {
+        await tx.checklistItem.deleteMany({
+          where: {
+            activityId: { in: activities.map(a => a.id) }
+          }
+        })
+      }
+
+      // Delete related activities
+      await tx.activity.deleteMany({
+        where: { locationId: params.id }
+      })
+
+      // Finally delete the location
+      await tx.location.delete({
+        where: { id: params.id }
+      })
     })
 
     return NextResponse.json({ success: true })
