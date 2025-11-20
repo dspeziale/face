@@ -23,6 +23,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -55,14 +56,24 @@ export default function UsersPage() {
     e.preventDefault()
 
     try {
-      const res = await fetch('/api/users', {
-        method: 'POST',
+      const method = selectedUser ? 'PUT' : 'POST'
+      const url = selectedUser
+        ? `/api/users/${selectedUser.id}`
+        : '/api/users'
+
+      // Don't send empty password on edit
+      const payload = selectedUser && !formData.password
+        ? { ...formData, password: undefined }
+        : formData
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
       if (res.ok) {
-        toast.success('Utente creato')
+        toast.success(selectedUser ? 'Utente aggiornato' : 'Utente creato')
         setShowModal(false)
         resetForm()
         fetchUsers()
@@ -110,6 +121,7 @@ export default function UsersPage() {
   }
 
   const resetForm = () => {
+    setSelectedUser(null)
     setFormData({
       email: '',
       password: '',
@@ -117,6 +129,18 @@ export default function UsersPage() {
       phone: '',
       role: 'WORKER'
     })
+  }
+
+  const openEditModal = (user: User) => {
+    setSelectedUser(user)
+    setFormData({
+      email: user.email,
+      password: '',
+      name: user.name,
+      phone: user.phone || '',
+      role: user.role
+    })
+    setShowModal(true)
   }
 
   const formatDate = (dateString: string) => {
@@ -201,6 +225,13 @@ export default function UsersPage() {
                       <td>
                         <div className="d-flex gap-2">
                           <button
+                            className="btn btn-sm btn-info"
+                            onClick={() => openEditModal(user)}
+                            title="Modifica"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
                             className={`btn btn-sm btn-${user.isActive ? 'warning' : 'success'}`}
                             onClick={() => toggleUserStatus(user.id, user.isActive)}
                             title={user.isActive ? 'Disattiva' : 'Attiva'}
@@ -226,13 +257,13 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Modal Creazione */}
+      {/* Modal Creazione/Modifica */}
       {showModal && (
         <>
           <div className="modal-backdrop" onClick={() => setShowModal(false)}></div>
           <div className="modal">
             <div className="modal-header">
-              <h5 className="modal-title">Nuovo Utente</h5>
+              <h5 className="modal-title">{selectedUser ? 'Modifica Utente' : 'Nuovo Utente'}</h5>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
@@ -255,17 +286,20 @@ export default function UsersPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
+                    disabled={!!selectedUser}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Password *</label>
+                  <label className="form-label">
+                    Password {selectedUser ? '(lascia vuoto per non modificare)' : '*'}
+                  </label>
                   <input
                     type="password"
                     className="form-control"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
+                    required={!selectedUser}
                     minLength={6}
                   />
                 </div>
@@ -299,7 +333,7 @@ export default function UsersPage() {
                   Annulla
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Crea Utente
+                  {selectedUser ? 'Aggiorna' : 'Crea Utente'}
                 </button>
               </div>
             </form>

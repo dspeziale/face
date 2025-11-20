@@ -42,9 +42,6 @@ model Location {
   capacity    Int      @default(1)
   rooms       Int      @default(1)
   bathrooms   Int      @default(1)
-  hasWifi     Boolean  @default(true)
-  hasParking  Boolean  @default(false)
-  hasAC       Boolean  @default(false)
   notes       String?
   isActive    Boolean  @default(true)
   qrCode      String   @unique @default(cuid())
@@ -55,8 +52,34 @@ model Location {
   activities   Activity[]
   attendances  Attendance[]
   inventories  Inventory[]
+  services     LocationService[]
 
   @@map("locations")
+}
+
+// Servizi disponibili
+model Service {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  icon      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  locations LocationService[]
+
+  @@map("services")
+}
+
+// Relazione many-to-many Location-Service
+model LocationService {
+  id         String   @id @default(cuid())
+  locationId String
+  serviceId  String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([locationId, serviceId])
+  @@map("location_services")
 }
 
 // Attività

@@ -68,8 +68,13 @@ export default function TemplatesPage() {
     }
 
     try {
-      const res = await fetch('/api/templates', {
-        method: 'POST',
+      const method = selectedTemplate ? 'PUT' : 'POST'
+      const url = selectedTemplate
+        ? `/api/templates/${selectedTemplate.id}`
+        : '/api/templates'
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
@@ -78,7 +83,7 @@ export default function TemplatesPage() {
       })
 
       if (res.ok) {
-        toast.success('Template creato')
+        toast.success(selectedTemplate ? 'Template aggiornato' : 'Template creato')
         setShowModal(false)
         resetForm()
         fetchTemplates()
@@ -89,6 +94,19 @@ export default function TemplatesPage() {
     } catch (error) {
       toast.error('Errore di rete')
     }
+  }
+
+  const openEditModal = (template: Template) => {
+    setSelectedTemplate(template)
+    setFormData({
+      name: template.name,
+      description: template.description || '',
+      type: template.type,
+      role: template.role,
+      isDefault: template.isDefault,
+      steps: template.steps.map(s => ({ title: s.title, isRequired: s.isRequired }))
+    })
+    setShowModal(true)
   }
 
   const handleDelete = async (id: string) => {
@@ -207,6 +225,13 @@ export default function TemplatesPage() {
                     </div>
                     <div className="card-footer d-flex justify-content-end gap-2">
                       <button
+                        className="btn btn-sm btn-warning"
+                        onClick={() => openEditModal(template)}
+                        title="Modifica"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
                         className="btn btn-sm btn-danger"
                         onClick={() => handleDelete(template.id)}
                         title="Elimina"
@@ -222,13 +247,13 @@ export default function TemplatesPage() {
         </div>
       </div>
 
-      {/* Modal Creazione */}
+      {/* Modal Creazione/Modifica */}
       {showModal && (
         <>
           <div className="modal-backdrop" onClick={() => setShowModal(false)}></div>
           <div className="modal" style={{ maxWidth: '600px' }}>
             <div className="modal-header">
-              <h5 className="modal-title">Nuovo Template Flow</h5>
+              <h5 className="modal-title">{selectedTemplate ? 'Modifica Template' : 'Nuovo Template Flow'}</h5>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
@@ -341,7 +366,7 @@ export default function TemplatesPage() {
                   Annulla
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Crea Template
+                  {selectedTemplate ? 'Aggiorna' : 'Crea Template'}
                 </button>
               </div>
             </form>
