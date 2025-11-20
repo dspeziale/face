@@ -878,3 +878,335 @@ body {
     font-size: 0.75rem;
   }
 }
+
+/* ==========================================
+   MOBILE & TABLET OPTIMIZATIONS
+   ========================================== */
+
+/* Table responsive wrapper */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tablet styles (768px - 991px) */
+@media (max-width: 991.98px) and (min-width: 768px) {
+  .content {
+    padding: 0.75rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .small-box .icon {
+    font-size: 50px;
+    top: 5px;
+  }
+
+  .modal {
+    max-width: 90%;
+  }
+}
+
+/* Mobile styles (< 768px) */
+@media (max-width: 767.98px) {
+  /* Content spacing */
+  .content {
+    padding: 0.5rem;
+  }
+
+  .content-header {
+    padding: 10px 0.75rem;
+  }
+
+  .content-header h1 {
+    font-size: 1.2rem;
+  }
+
+  /* Cards */
+  .card {
+    margin-bottom: 0.75rem;
+  }
+
+  .card-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  /* Info boxes */
+  .small-box > .inner {
+    padding: 8px;
+  }
+
+  .small-box h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+  }
+
+  .small-box p {
+    font-size: 0.85rem;
+  }
+
+  .small-box .icon {
+    font-size: 40px;
+    top: 5px;
+    right: 5px;
+  }
+
+  /* Tables */
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .table thead th {
+    white-space: nowrap;
+  }
+
+  /* Buttons - better touch targets */
+  .btn {
+    min-height: 38px;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .btn-sm {
+    min-height: 32px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* Button groups - stack on mobile */
+  .d-flex.gap-2 {
+    gap: 0.35rem;
+  }
+
+  /* Forms */
+  .form-control,
+  .form-select {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 0.5rem 0.75rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Modal */
+  .modal {
+    max-width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 0.75rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: 0.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  /* Login */
+  .login-box {
+    width: 90%;
+    max-width: 360px;
+  }
+
+  .login-logo {
+    font-size: 1.6rem;
+  }
+
+  /* Grid - force full width on mobile */
+  .col-md-6,
+  .col-md-4,
+  .col-md-3,
+  .col-lg-6,
+  .col-lg-4,
+  .col-lg-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Badges */
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2em 0.35em;
+  }
+
+  /* Navbar */
+  .main-header {
+    height: 50px;
+    padding: 0 0.5rem;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.35rem;
+  }
+
+  /* QR Scanner */
+  .qr-scanner-container {
+    max-width: 100%;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    font-size: 0.8rem;
+  }
+
+  /* User panel in sidebar */
+  .user-panel {
+    padding: 0.35rem 0.75rem;
+  }
+
+  .user-panel .info .user-name {
+    font-size: 0.9rem;
+  }
+
+  .user-panel .info .user-role {
+    font-size: 0.7rem;
+  }
+
+  /* Sidebar nav */
+  .sidebar-nav .nav-link {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .sidebar-nav .nav-header {
+    padding: 0.5rem 0.75rem 0.35rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* Extra small devices (< 576px) */
+@media (max-width: 575.98px) {
+  .content-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .small-box h3 {
+    font-size: 1.3rem;
+  }
+
+  .small-box p {
+    font-size: 0.75rem;
+  }
+
+  .small-box .icon {
+    font-size: 30px;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+  }
+
+  .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .card-header {
+    padding: 0.5rem;
+  }
+
+  .card-body {
+    padding: 0.5rem;
+  }
+
+  /* Hide text on very small buttons, show only icons */
+  .btn-sm .btn-text {
+    display: none;
+  }
+}
+
+/* Utility classes for responsive visibility */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-inline-block { display: inline-block !important; }
+
+@media (min-width: 576px) {
+  .d-sm-none { display: none !important; }
+  .d-sm-block { display: block !important; }
+  .d-sm-inline-block { display: inline-block !important; }
+}
+
+@media (min-width: 768px) {
+  .d-md-none { display: none !important; }
+  .d-md-block { display: block !important; }
+  .d-md-inline-block { display: inline-block !important; }
+
+  /* Reset grid columns for tablet+ */
+  .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+  .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-md-3 { flex: 0 0 25%; max-width: 25%; }
+}
+
+@media (min-width: 992px) {
+  .d-lg-none { display: none !important; }
+  .d-lg-block { display: block !important; }
+  .d-lg-inline-block { display: inline-block !important; }
+}
+
+/* Text utilities for mobile */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Improved touch targets */
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+  }
+
+  .btn-sm {
+    min-height: 36px;
+  }
+
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Print styles */
+@media print {
+  .sidebar,
+  .main-header,
+  .mobile-toggle,
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  .content-wrapper {
+    margin-left: 0 !important;
+  }
+}
