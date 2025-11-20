@@ -97,8 +97,46 @@ export async function DELETE(
       return NextResponse.json({ error: 'Non puoi eliminare te stesso' }, { status: 400 })
     }
 
-    await prisma.user.delete({
-      where: { id: params.id }
+    // Use a transaction to delete all related records first
+    await prisma.$transaction(async (tx) => {
+      // Delete notifications
+      await tx.notification.deleteMany({
+        where: { userId: params.id }
+      })
+
+      // Delete attendances
+      await tx.attendance.deleteMany({
+        where: { userId: params.id }
+      })
+
+      // Get activities created by this user
+      const createdActivities = await tx.activity.findMany({
+        where: { createdById: params.id },
+        select: { id: true }
+      })
+
+      // Delete checklist items for created activities
+      if (createdActivities.length > 0) {
+        await tx.checklistItem.deleteMany({
+          where: { activityId: { in: createdActivities.map(a => a.id) } }
+        })
+      }
+
+      // Delete activities created by this user
+      await tx.activity.deleteMany({
+        where: { createdById: params.id }
+      })
+
+      // Unassign activities assigned to this user (don't delete them)
+      await tx.activity.updateMany({
+        where: { assignedToId: params.id },
+        data: { assignedToId: null }
+      })
+
+      // Finally delete the user
+      await tx.user.delete({
+        where: { id: params.id }
+      })
     })
 
     return NextResponse.json({ success: true })

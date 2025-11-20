@@ -98,6 +98,55 @@ export async function PUT(
       }
     })
 
+    // Send notifications on status change
+    if (data.status && data.status !== currentActivity.status) {
+      const statusLabels: Record<string, string> = {
+        PENDING: 'In attesa',
+        IN_PROGRESS: 'In corso',
+        COMPLETED: 'Completata',
+        CANCELLED: 'Annullata'
+      }
+
+      // Notify assigned user about status change
+      if (activity.assignedToId && activity.assignedToId !== session.user.id) {
+        await prisma.notification.create({
+          data: {
+            title: `Attività ${statusLabels[data.status]}`,
+            message: `L'attività "${activity.title}" è stata aggiornata a: ${statusLabels[data.status]}`,
+            type: data.status === 'COMPLETED' ? 'success' : 'info',
+            userId: activity.assignedToId,
+            link: `/activities/${activity.id}`
+          }
+        })
+      }
+
+      // Notify creator when activity is completed (if different from who completed it)
+      if (data.status === 'COMPLETED' && currentActivity.createdById !== session.user.id) {
+        await prisma.notification.create({
+          data: {
+            title: 'Attività completata',
+            message: `L'attività "${activity.title}" è stata completata`,
+            type: 'success',
+            userId: currentActivity.createdById,
+            link: `/activities/${activity.id}`
+          }
+        })
+      }
+    }
+
+    // Notify if assignment changed
+    if (data.assignedToId && data.assignedToId !== currentActivity.assignedToId) {
+      await prisma.notification.create({
+        data: {
+          title: 'Nuova attività assegnata',
+          message: `Ti è stata assegnata l'attività: ${activity.title}`,
+          type: 'info',
+          userId: data.assignedToId,
+          link: `/activities/${activity.id}`
+        }
+      })
+    }
+
     return NextResponse.json(activity)
   } catch (error) {
     console.error('Error updating activity:', error)
@@ -115,8 +164,22 @@ export async function DELETE(
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    await prisma.activity.delete({
-      where: { id: params.id }
+    // Use a transaction to delete related records first
+    await prisma.$transaction(async (tx) => {
+      // Delete checklist items
+      await tx.checklistItem.deleteMany({
+        where: { activityId: params.id }
+      })
+
+      // Delete attendances related to this activity
+      await tx.attendance.deleteMany({
+        where: { activityId: params.id }
+      })
+
+      // Delete the activity
+      await tx.activity.delete({
+        where: { id: params.id }
+      })
     })
 
     return NextResponse.json({ success: true })
