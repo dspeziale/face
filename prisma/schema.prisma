@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// Ruoli utente
+enum UserRole {
+  ADMIN        // Amministratore
+  OPERATOR     // Operatore
+  WORKER       // Operaio
+  HOUSEKEEPER  // Cameriera
+}
+
+// Stato delle attività
+enum ActivityStatus {
+  PENDING      // In attesa
+  IN_PROGRESS  // In corso
+  COMPLETED    // Completata
+  CANCELLED    // Annullata
+}
+
+// Priorità
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Tipo di attività
+enum ActivityType {
+  MAINTENANCE  // Manutenzione
+  LAUNDRY      // Biancheria
+  CLEANING     // Pulizia
+  EMERGENCY    // Emergenza
+  INSPECTION   // Ispezione
+  OTHER        // Altro
+}
+
+// Utenti del sistema
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  phone         String?
+  role          UserRole  @default(WORKER)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relazioni
+  assignedActivities  Activity[]    @relation("AssignedTo")
+  createdActivities   Activity[]    @relation("CreatedBy")
+  attendances         Attendance[]
+  notifications       Notification[]
+
+  @@map("users")
+}
+
+// Location (B&B/Appartamenti)
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  postalCode  String?
+  phone       String?
+  email       String?
+  description String?
+  capacity    Int      @default(1)  // Numero ospiti
+  rooms       Int      @default(1)  // Numero stanze
+  bathrooms   Int      @default(1)
+  hasWifi     Boolean  @default(true)
+  hasParking  Boolean  @default(false)
+  hasAC       Boolean  @default(false)
+  notes       String?
+  isActive    Boolean  @default(true)
+  qrCode      String   @unique @default(cuid())  // Codice QR univoco per la location
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relazioni
+  activities   Activity[]
+  attendances  Attendance[]
+  inventories  Inventory[]
+
+  @@map("locations")
+}
+
+// Attività (include manutenzione, biancheria, emergenze, ecc.)
+model Activity {
+  id           String         @id @default(cuid())
+  title        String
+  description  String?
+  type         ActivityType
+  status       ActivityStatus @default(PENDING)
+  priority     Priority       @default(MEDIUM)
+  scheduledAt  DateTime?      // Data programmata
+  startedAt    DateTime?      // Data inizio effettivo
+  completedAt  DateTime?      // Data completamento
+  dueDate      DateTime?      // Scadenza
+  notes        String?
+  cost         Float?         // Costo (per manutenzioni)
+
+  // Relazioni
+  locationId   String
+  location     Location       @relation(fields: [locationId], references: [id])
+
+  assignedToId String?
+  assignedTo   User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  createdById  String
+  createdBy    User           @relation("CreatedBy", fields: [createdById], references: [id])
+
+  // Checklist items
+  checklistItems ChecklistItem[]
+
+  // Attendances (verifiche presenza)
+  attendances  Attendance[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([locationId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([type])
+  @@map("activities")
+}
+
+// Items della checklist per ogni attività
+model ChecklistItem {
+  id          String   @id @default(cuid())
+  text        String
+  isCompleted Boolean  @default(false)
+  order       Int      @default(0)
+
+  activityId  String
+  activity    Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("checklist_items")
+}
+
+// Template di flow attività per ruolo
+model ActivityTemplate {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        ActivityType
+  role        UserRole     // Per quale ruolo è questo template
+  isDefault   Boolean      @default(false)
+
+  // Steps del flow
+  steps       TemplateStep[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("activity_templates")
+}
+
+// Steps del template
+model TemplateStep {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  order       Int
+  isRequired  Boolean          @default(true)
+
+  templateId  String
+  template    ActivityTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("template_steps")
+}
+
+// Registro presenze (check-in tramite QR code)
+model Attendance {
+  id          String    @id @default(cuid())
+  checkInAt   DateTime  @default(now())
+  checkOutAt  DateTime?
+
+  // Coordinate GPS (opzionale)
+  latitude    Float?
+  longitude   Float?
+
+  notes       String?
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+
+  locationId  String
+  location    Location  @relation(fields: [locationId], references: [id])
+
+  activityId  String?
+  activity    Activity? @relation(fields: [activityId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([locationId])
+  @@index([activityId])
+  @@map("attendances")
+}
+
+// Inventario per location (biancheria, prodotti, ecc.)
+model Inventory {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // es: "biancheria", "prodotti pulizia", "amenities"
+  quantity    Int      @default(0)
+  minQuantity Int      @default(0)  // Soglia minima per alert
+  unit        String   @default("pz")  // unità di misura
+
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("inventories")
+}
+
+// Notifiche
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   @default("info")  // info, warning, error, success
+  link      String?  // Link opzionale
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("notifications")
+}
