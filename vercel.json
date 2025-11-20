@@ -4,6 +4,6 @@
   "installCommand": "npm install",
   "env": {
     "NEXTAUTH_URL": "https://luoghi.vercel.app",
-    "NEXTAUTH_SECRET": "@nextauth_secret"
+    "NEXTAUTH_SECRET": "caadd218a6d07d00b49d608d509b9d2b"
   }
 }
