@@ -7,40 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Ruoli utente
-enum UserRole {
-  ADMIN        // Amministratore
-  OPERATOR     // Operatore
-  WORKER       // Operaio
-  HOUSEKEEPER  // Cameriera
-}
-
-// Stato delle attività
-enum ActivityStatus {
-  PENDING      // In attesa
-  IN_PROGRESS  // In corso
-  COMPLETED    // Completata
-  CANCELLED    // Annullata
-}
-
-// Priorità
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-// Tipo di attività
-enum ActivityType {
-  MAINTENANCE  // Manutenzione
-  LAUNDRY      // Biancheria
-  CLEANING     // Pulizia
-  EMERGENCY    // Emergenza
-  INSPECTION   // Ispezione
-  OTHER        // Altro
-}
-
 // Utenti del sistema
 model User {
   id            String    @id @default(cuid())
@@ -48,7 +14,7 @@ model User {
   password      String
   name          String
   phone         String?
-  role          UserRole  @default(WORKER)
+  role          String    @default("WORKER")  // ADMIN, OPERATOR, WORKER, HOUSEKEEPER
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -72,15 +38,15 @@ model Location {
   phone       String?
   email       String?
   description String?
-  capacity    Int      @default(1)  // Numero ospiti
-  rooms       Int      @default(1)  // Numero stanze
+  capacity    Int      @default(1)
+  rooms       Int      @default(1)
   bathrooms   Int      @default(1)
   hasWifi     Boolean  @default(true)
   hasParking  Boolean  @default(false)
   hasAC       Boolean  @default(false)
   notes       String?
   isActive    Boolean  @default(true)
-  qrCode      String   @unique @default(cuid())  // Codice QR univoco per la location
+  qrCode      String   @unique @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -92,39 +58,36 @@ model Location {
   @@map("locations")
 }
 
-// Attività (include manutenzione, biancheria, emergenze, ecc.)
+// Attività
 model Activity {
-  id           String         @id @default(cuid())
+  id           String    @id @default(cuid())
   title        String
   description  String?
-  type         ActivityType
-  status       ActivityStatus @default(PENDING)
-  priority     Priority       @default(MEDIUM)
-  scheduledAt  DateTime?      // Data programmata
-  startedAt    DateTime?      // Data inizio effettivo
-  completedAt  DateTime?      // Data completamento
-  dueDate      DateTime?      // Scadenza
+  type         String    @default("OTHER")      // MAINTENANCE, LAUNDRY, CLEANING, EMERGENCY, INSPECTION, OTHER
+  status       String    @default("PENDING")    // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+  priority     String    @default("MEDIUM")     // LOW, MEDIUM, HIGH, URGENT
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  dueDate      DateTime?
   notes        String?
-  cost         Float?         // Costo (per manutenzioni)
+  cost         Float?
 
   // Relazioni
   locationId   String
-  location     Location       @relation(fields: [locationId], references: [id])
+  location     Location  @relation(fields: [locationId], references: [id])
 
   assignedToId String?
-  assignedTo   User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+  assignedTo   User?     @relation("AssignedTo", fields: [assignedToId], references: [id])
 
   createdById  String
-  createdBy    User           @relation("CreatedBy", fields: [createdById], references: [id])
+  createdBy    User      @relation("CreatedBy", fields: [createdById], references: [id])
 
-  // Checklist items
   checklistItems ChecklistItem[]
-
-  // Attendances (verifiche presenza)
   attendances  Attendance[]
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([locationId])
   @@index([assignedToId])
@@ -133,7 +96,7 @@ model Activity {
   @@map("activities")
 }
 
-// Items della checklist per ogni attività
+// Items della checklist
 model ChecklistItem {
   id          String   @id @default(cuid())
   text        String
@@ -149,20 +112,19 @@ model ChecklistItem {
   @@map("checklist_items")
 }
 
-// Template di flow attività per ruolo
+// Template di flow attività
 model ActivityTemplate {
-  id          String       @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  type        ActivityType
-  role        UserRole     // Per quale ruolo è questo template
-  isDefault   Boolean      @default(false)
+  type        String   @default("OTHER")      // MAINTENANCE, LAUNDRY, CLEANING, EMERGENCY, INSPECTION, OTHER
+  role        String   @default("WORKER")     // ADMIN, OPERATOR, WORKER, HOUSEKEEPER
+  isDefault   Boolean  @default(false)
 
-  // Steps del flow
   steps       TemplateStep[]
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("activity_templates")
 }
@@ -184,16 +146,13 @@ model TemplateStep {
   @@map("template_steps")
 }
 
-// Registro presenze (check-in tramite QR code)
+// Registro presenze
 model Attendance {
   id          String    @id @default(cuid())
   checkInAt   DateTime  @default(now())
   checkOutAt  DateTime?
-
-  // Coordinate GPS (opzionale)
   latitude    Float?
   longitude   Float?
-
   notes       String?
 
   userId      String
@@ -214,14 +173,14 @@ model Attendance {
   @@map("attendances")
 }
 
-// Inventario per location (biancheria, prodotti, ecc.)
+// Inventario
 model Inventory {
   id          String   @id @default(cuid())
   name        String
-  category    String   // es: "biancheria", "prodotti pulizia", "amenities"
+  category    String
   quantity    Int      @default(0)
-  minQuantity Int      @default(0)  // Soglia minima per alert
-  unit        String   @default("pz")  // unità di misura
+  minQuantity Int      @default(0)
+  unit        String   @default("pz")
 
   locationId  String
   location    Location @relation(fields: [locationId], references: [id])
@@ -238,8 +197,8 @@ model Notification {
   title     String
   message   String
   isRead    Boolean  @default(false)
-  type      String   @default("info")  // info, warning, error, success
-  link      String?  // Link opzionale
+  type      String   @default("info")
+  link      String?
 
   userId    String
   user      User     @relation(fields: [userId], references: [id])
