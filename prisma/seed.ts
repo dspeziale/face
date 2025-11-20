@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, ActivityType, Priority, ActivityStatus } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -17,7 +17,7 @@ async function main() {
       email: 'admin@bbmanagement.it',
       password: adminPassword,
       name: 'Amministratore',
-      role: UserRole.ADMIN,
+      role: 'ADMIN',
       phone: '+39 333 1234567'
     }
   })
@@ -29,7 +29,7 @@ async function main() {
       email: 'operatore@bbmanagement.it',
       password: userPassword,
       name: 'Mario Rossi',
-      role: UserRole.OPERATOR,
+      role: 'OPERATOR',
       phone: '+39 333 2345678'
     }
   })
@@ -41,7 +41,7 @@ async function main() {
       email: 'operaio@bbmanagement.it',
       password: userPassword,
       name: 'Giuseppe Verdi',
-      role: UserRole.WORKER,
+      role: 'WORKER',
       phone: '+39 333 3456789'
     }
   })
@@ -53,7 +53,7 @@ async function main() {
       email: 'cameriera@bbmanagement.it',
       password: userPassword,
       name: 'Anna Bianchi',
-      role: UserRole.HOUSEKEEPER,
+      role: 'HOUSEKEEPER',
       phone: '+39 333 4567890'
     }
   })
@@ -132,22 +132,22 @@ async function main() {
       data: {
         title: 'Riparazione rubinetto bagno',
         description: 'Il rubinetto del bagno principale perde acqua',
-        type: ActivityType.MAINTENANCE,
-        priority: Priority.HIGH,
-        status: ActivityStatus.PENDING,
+        type: 'MAINTENANCE',
+        priority: 'HIGH',
+        status: 'PENDING',
         locationId: location1.id,
         createdById: admin.id,
         assignedToId: worker.id,
-        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // +2 giorni
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
       }
     }),
     prisma.activity.create({
       data: {
         title: 'Cambio biancheria completo',
         description: 'Cambio lenzuola, asciugamani e tovaglie',
-        type: ActivityType.LAUNDRY,
-        priority: Priority.MEDIUM,
-        status: ActivityStatus.IN_PROGRESS,
+        type: 'LAUNDRY',
+        priority: 'MEDIUM',
+        status: 'IN_PROGRESS',
         locationId: location2.id,
         createdById: operator.id,
         assignedToId: housekeeper.id,
@@ -158,26 +158,26 @@ async function main() {
       data: {
         title: 'Pulizia profonda appartamento',
         description: 'Pulizia completa dopo check-out',
-        type: ActivityType.CLEANING,
-        priority: Priority.HIGH,
-        status: ActivityStatus.PENDING,
+        type: 'CLEANING',
+        priority: 'HIGH',
+        status: 'PENDING',
         locationId: location1.id,
         createdById: admin.id,
         assignedToId: housekeeper.id,
-        scheduledAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // +1 giorno
+        scheduledAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       }
     }),
     prisma.activity.create({
       data: {
         title: 'Allagamento bagno - URGENTE',
         description: 'Tubo rotto sotto il lavandino',
-        type: ActivityType.EMERGENCY,
-        priority: Priority.URGENT,
-        status: ActivityStatus.COMPLETED,
+        type: 'EMERGENCY',
+        priority: 'URGENT',
+        status: 'COMPLETED',
         locationId: location3.id,
         createdById: operator.id,
         assignedToId: worker.id,
-        startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // -2 ore
+        startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
         completedAt: new Date(),
         cost: 150.00,
       }
@@ -192,8 +192,8 @@ async function main() {
       data: {
         name: 'Pulizia Standard Cameriera',
         description: 'Flow di pulizia standard per cameriera',
-        type: ActivityType.CLEANING,
-        role: UserRole.HOUSEKEEPER,
+        type: 'CLEANING',
+        role: 'HOUSEKEEPER',
         isDefault: true,
         steps: {
           create: [
@@ -212,8 +212,8 @@ async function main() {
       data: {
         name: 'Manutenzione Idraulica',
         description: 'Flow per interventi idraulici',
-        type: ActivityType.MAINTENANCE,
-        role: UserRole.WORKER,
+        type: 'MAINTENANCE',
+        role: 'WORKER',
         isDefault: true,
         steps: {
           create: [
