@@ -279,19 +279,20 @@ export default function ActivitiesPage() {
               <div className="spinner"></div>
             </div>
           ) : (
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Titolo</th>
-                  <th>Tipo</th>
-                  <th>Location</th>
-                  <th>Assegnato a</th>
-                  <th>Priorità</th>
-                  <th>Stato</th>
-                  <th>Scadenza</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Titolo</th>
+                    <th>Tipo</th>
+                    <th>Location</th>
+                    <th>Assegnato a</th>
+                    <th>Priorità</th>
+                    <th>Stato</th>
+                    <th>Scadenza</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
               <tbody>
                 {activities.length === 0 ? (
                   <tr>
@@ -358,6 +359,7 @@ export default function ActivitiesPage() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

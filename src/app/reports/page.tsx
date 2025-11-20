@@ -326,34 +326,36 @@ export default function ReportsPage() {
               </button>
             </div>
             <div className="card-body p-0">
-              <table className="table table-striped table-hover">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Titolo</th>
-                    <th>Tipo</th>
-                    <th>Location</th>
-                    <th>Assegnato a</th>
-                    <th>Stato</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.activities.map((activity) => (
-                    <tr key={activity.id}>
-                      <td>{formatDate(activity.createdAt)}</td>
-                      <td>{activity.title}</td>
-                      <td>{ACTIVITY_TYPE_LABELS[activity.type as keyof typeof ACTIVITY_TYPE_LABELS]}</td>
-                      <td>{activity.location.name}</td>
-                      <td>{activity.assignedTo?.name || '-'}</td>
-                      <td>
-                        <span className={`badge badge-${STATUS_COLORS[activity.status as keyof typeof STATUS_COLORS]}`}>
-                          {STATUS_LABELS[activity.status as keyof typeof STATUS_LABELS]}
-                        </span>
-                      </td>
+              <div className="table-responsive">
+                <table className="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Titolo</th>
+                      <th>Tipo</th>
+                      <th>Location</th>
+                      <th>Assegnato a</th>
+                      <th>Stato</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {reportData.activities.map((activity) => (
+                      <tr key={activity.id}>
+                        <td>{formatDate(activity.createdAt)}</td>
+                        <td>{activity.title}</td>
+                        <td>{ACTIVITY_TYPE_LABELS[activity.type as keyof typeof ACTIVITY_TYPE_LABELS]}</td>
+                        <td>{activity.location.name}</td>
+                        <td>{activity.assignedTo?.name || '-'}</td>
+                        <td>
+                          <span className={`badge badge-${STATUS_COLORS[activity.status as keyof typeof STATUS_COLORS]}`}>
+                            {STATUS_LABELS[activity.status as keyof typeof STATUS_LABELS]}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </>

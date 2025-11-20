@@ -149,17 +149,18 @@ export default async function DashboardPage() {
           <h3 className="card-title">Attività Recenti</h3>
         </div>
         <div className="card-body p-0">
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Titolo</th>
-                <th>Tipo</th>
-                <th>Location</th>
-                <th>Assegnato a</th>
-                <th>Stato</th>
-                <th>Azioni</th>
-              </tr>
-            </thead>
+          <div className="table-responsive">
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Titolo</th>
+                  <th>Tipo</th>
+                  <th>Location</th>
+                  <th>Assegnato a</th>
+                  <th>Stato</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
             <tbody>
               {recentActivities.length === 0 ? (
                 <tr>
@@ -205,6 +206,7 @@ export default async function DashboardPage() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </MainLayout>

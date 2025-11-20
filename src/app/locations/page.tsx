@@ -186,19 +186,20 @@ export default function LocationsPage() {
               <div className="spinner"></div>
             </div>
           ) : (
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Indirizzo</th>
-                  <th>Città</th>
-                  <th>Capacità</th>
-                  <th>Servizi</th>
-                  <th>Attività</th>
-                  <th>Stato</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Indirizzo</th>
+                    <th>Città</th>
+                    <th>Capacità</th>
+                    <th>Servizi</th>
+                    <th>Attività</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
               <tbody>
                 {locations.length === 0 ? (
                   <tr>
@@ -256,6 +257,7 @@ export default function LocationsPage() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

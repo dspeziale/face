@@ -134,19 +134,20 @@ export default function UsersPage() {
               <div className="spinner"></div>
             </div>
           ) : (
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Telefono</th>
-                  <th>Ruolo</th>
-                  <th>Attività</th>
-                  <th>Stato</th>
-                  <th>Creato il</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefono</th>
+                    <th>Ruolo</th>
+                    <th>Attività</th>
+                    <th>Stato</th>
+                    <th>Creato il</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
               <tbody>
                 {users.length === 0 ? (
                   <tr>
@@ -194,6 +195,7 @@ export default function UsersPage() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

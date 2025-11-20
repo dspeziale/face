@@ -146,18 +146,19 @@ export default function InventoryPage() {
               <div className="spinner"></div>
             </div>
           ) : (
-            <table className="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Categoria</th>
-                  <th>Location</th>
-                  <th>Quantità</th>
-                  <th>Min</th>
-                  <th>Stato</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Location</th>
+                    <th>Quantità</th>
+                    <th>Min</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
               <tbody>
                 {items.length === 0 ? (
                   <tr>
@@ -196,6 +197,7 @@ export default function InventoryPage() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
