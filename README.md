@@ -45,7 +45,7 @@ Applicazione per la gestione professionale di Bed & Breakfast, sviluppata con Ne
 
 - **Frontend**: Next.js 14 (App Router)
 - **UI**: AdminLTE 3 (CSS custom)
-- **Database**: Vercel Postgres (Neon)
+- **Database**: Nile (Postgres Serverless)
 - **ORM**: Prisma
 - **Autenticazione**: NextAuth.js
 - **QR Code**: html5-qrcode + qrcode.react
@@ -77,8 +77,7 @@ Applicazione per la gestione professionale di Bed & Breakfast, sviluppata con Ne
 
    Modifica `.env` con i tuoi valori:
    ```
-   POSTGRES_PRISMA_URL="postgresql://..."
-   POSTGRES_URL_NON_POOLING="postgresql://..."
+   DATABASE_URL="postgresql://user:password@db.thenile.dev:5432/database?sslmode=require"
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="genera-con-openssl-rand-base64-32"
    ```
@@ -100,19 +99,20 @@ Applicazione per la gestione professionale di Bed & Breakfast, sviluppata con Ne
 
 ## Deploy su Vercel
 
-### 1. Crea un nuovo progetto su Vercel
+### 1. Crea un database su Nile
+
+1. Vai su [console.thenile.dev](https://console.thenile.dev)
+2. Crea un nuovo database
+3. Copia la connection string (DATABASE_URL)
+
+### 2. Crea un nuovo progetto su Vercel
 
 1. Importa il repository da GitHub
 2. Framework Preset: Next.js
 
-### 2. Configura Vercel Postgres
-
-1. Vai su Storage > Create Database > Postgres
-2. Crea un nuovo database
-3. Le variabili verranno aggiunte automaticamente
-
 ### 3. Aggiungi le variabili d'ambiente
 
+- `DATABASE_URL`: Connection string da Nile
 - `NEXTAUTH_URL`: URL del tuo sito (es. https://tuodominio.vercel.app)
 - `NEXTAUTH_SECRET`: Chiave segreta (genera con `openssl rand -base64 32`)
 
