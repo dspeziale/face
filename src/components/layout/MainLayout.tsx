@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 
@@ -15,12 +15,20 @@ interface MainLayoutProps {
 export default function MainLayout({ children, title, breadcrumb }: MainLayoutProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/login')
     }
   }, [status, router])
+
+  // Chiudi sidebar quando si clicca fuori su mobile
+  const closeSidebar = () => {
+    if (sidebarOpen) {
+      setSidebarOpen(false)
+    }
+  }
 
   if (status === 'loading') {
     return (
@@ -36,10 +44,10 @@ export default function MainLayout({ children, title, breadcrumb }: MainLayoutPr
 
   return (
     <div>
-      <Sidebar />
-      <Header />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className="content-wrapper">
+      <div className="content-wrapper" onClick={closeSidebar}>
         {(title || breadcrumb) && (
           <div className="content-header">
             <div className="d-flex justify-content-between align-items-center">

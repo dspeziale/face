@@ -3,7 +3,7 @@
   "buildCommand": "prisma generate && next build",
   "installCommand": "npm install",
   "env": {
-    "NEXTAUTH_URL": "https://face.vercel.app",
-    "NEXTAUTH_SECRET": "d0180572f84dda8b92b6c4dda5df60b0"
+    "NEXTAUTH_URL": "https://luoghi.vercel.app",
+    "NEXTAUTH_SECRET": "caadd218a6d07d00b49d608d509b9d2b"
   }
 }

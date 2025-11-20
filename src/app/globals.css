@@ -786,3 +786,95 @@ body {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.8rem;
 }
+
+/* Mobile toggle button */
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.mobile-toggle:hover {
+  color: var(--primary);
+}
+
+/* Sidebar header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.8rem;
+  cursor: pointer;
+}
+
+.sidebar-close:hover {
+  color: #fff;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Mobile responsive */
+@media (max-width: 991.98px) {
+  .mobile-toggle {
+    display: block;
+  }
+
+  .sidebar-close {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .sidebar {
+    margin-left: -250px;
+    z-index: 1000;
+  }
+
+  .sidebar.show {
+    margin-left: 0;
+  }
+
+  .content-wrapper,
+  .main-header {
+    margin-left: 0;
+  }
+
+  .content-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .small-box h3 {
+    font-size: 1.8rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .btn-sm {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+  }
+}
