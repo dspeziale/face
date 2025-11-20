@@ -1,16 +1,25 @@
 'use client'
 
 import { signOut, useSession } from 'next-auth/react'
-import { FaSignOutAlt, FaBell, FaUser } from 'react-icons/fa'
+import { FaSignOutAlt, FaBell, FaUser, FaBars } from 'react-icons/fa'
 import Link from 'next/link'
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar?: () => void
+}
+
+export default function Header({ onToggleSidebar }: HeaderProps) {
   const { data: session } = useSession()
 
   return (
     <header className="main-header">
-      <div>
-        {/* Breadcrumb placeholder */}
+      <div className="d-flex align-items-center">
+        <button
+          className="mobile-toggle"
+          onClick={onToggleSidebar}
+        >
+          <FaBars size={20} />
+        </button>
       </div>
 
       <nav>
