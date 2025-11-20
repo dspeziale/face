@@ -92,6 +92,23 @@ export default function UsersPage() {
     }
   }
 
+  const handleDelete = async (userId: string) => {
+    if (!confirm('Sei sicuro di voler eliminare questo utente? Tutte le sue attività e presenze verranno eliminate.')) return
+
+    try {
+      const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' })
+      if (res.ok) {
+        toast.success('Utente eliminato')
+        fetchUsers()
+      } else {
+        const error = await res.json()
+        toast.error(error.error || 'Errore nell\'eliminazione')
+      }
+    } catch (error) {
+      toast.error('Errore di rete')
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       email: '',
@@ -182,13 +199,22 @@ export default function UsersPage() {
                       </td>
                       <td>{formatDate(user.createdAt)}</td>
                       <td>
-                        <button
-                          className={`btn btn-sm btn-${user.isActive ? 'warning' : 'success'}`}
-                          onClick={() => toggleUserStatus(user.id, user.isActive)}
-                          title={user.isActive ? 'Disattiva' : 'Attiva'}
-                        >
-                          {user.isActive ? <FaUserTimes /> : <FaUserCheck />}
-                        </button>
+                        <div className="d-flex gap-2">
+                          <button
+                            className={`btn btn-sm btn-${user.isActive ? 'warning' : 'success'}`}
+                            onClick={() => toggleUserStatus(user.id, user.isActive)}
+                            title={user.isActive ? 'Disattiva' : 'Attiva'}
+                          >
+                            {user.isActive ? <FaUserTimes /> : <FaUserCheck />}
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDelete(user.id)}
+                            title="Elimina"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
